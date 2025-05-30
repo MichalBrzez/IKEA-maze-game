@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labirynt IKEA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f0f0; /* Jasnoszary */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            color: #333;
+        }
+        .game-container {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            max-width: 90%;
+            width: 600px; /* Increased max width for more content */
+        }
+        canvas {
+            background-color: #fcfcfc; /* Bardzo jasny */
+            border: 2px solid #0058ab; /* IKEA Blue */
+            border-radius: 0.5rem;
+            display: block;
+            width: 100%; /* Make canvas responsive */
+            height: auto; /* Maintain aspect ratio */
+            touch-action: none; /* Prevent default touch actions like scrolling */
+        }
+        .controls {
+            display: grid;
+            grid-template-areas:
+                ". up ."
+                "left . right"
+                ". down .";
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 200px; /* Limit width of controls */
+        }
+        .control-button {
+            background-color: #ffda1a; /* IKEA Yellow */
+            color: #0058ab; /* IKEA Blue */
+            font-weight: bold;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 1.1rem;
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+        }
+        .control-button:hover {
+            background-color: #e6c500; /* Ciemniejszy żółty */
+        }
+        .control-button:active {
+            transform: scale(0.98);
+        }
+        #up { grid-area: up; }
+        #down { grid-area: down; }
+        #left { grid-area: left; }
+        #right { grid-area: right; }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 0.5rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #0058ab; /* IKEA Blue */
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+            justify-content: center;
+        }
+        .action-button {
+            background-color: #0058ab; /* IKEA Blue */
+            color: #ffffff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 1rem;
+            font-weight: bold;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .action-button:hover {
+            background-color: #004a90; /* Ciemniejszy niebieski */
+        }
+        .action-button:active {
+            transform: scale(0.98);
+        }
+
+        .message-box, .checkout-screen, .summary-screen, .boss-fight-screen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border: 2px solid #0058ab;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+            max-width: 90%;
+            width: 500px;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .message-box p, .checkout-screen p, .summary-screen p, .boss-fight-screen p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .message-box button, .checkout-screen button, .summary-screen button, .boss-fight-screen button {
+            background-color: #ffda1a;
+            color: #0058ab;
+            font-weight: bold;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 1rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .message-box button:hover, .checkout-screen button:hover, .summary-screen button:hover, .boss-fight-screen button:hover {
+            background-color: #e6c500;
+        }
+
+        .checkout-options, .summary-details {
+            text-align: left;
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0 1rem;
+        }
+        .checkout-options label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .checkout-options input[type="radio"], .checkout-options input[type="checkbox"] {
+            margin-right: 0.5rem;
+            transform: scale(1.2); /* Make radio/checkboxes larger for touch */
+        }
+        .summary-details p {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        .boss-fight-screen h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #0058ab;
+        }
+        .boss-fight-screen .boss-stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .boss-image {
+            font-size: 8rem; /* Large emoji */
+            cursor: pointer;
+            user-select: none; /* Prevent text selection */
+            transition: transform 0.1s;
+        }
+        .boss-image:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container" id="gameContainer">
+        <h1 class="text-3xl font-bold text-center text-blue-800 mb-4">Labirynt IKEA</h1>
+        <p class="text-center text-gray-700 mb-4">
+            Poruszaj się po labiryncie, znajdź produkty i dotrzyj do kasy!
+        </p>
+
+        <div class="game-info">
+            <span>Wynik: <span id="score">0</span></span>
+            <span>Promocje: <span id="promotions-left">0</span></span>
+            <span>HCS: <span id="hcs-score">0</span></span>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="controls">
+            <button id="up" class="control-button">▲</button>
+            <button id="left" class="control-button">◀</button>
+            <button id="right" class="control-button">▶</button>
+            <button id="down" class="control-button">▼</button>
+        </div>
+
+        <div class="action-buttons">
+            <button id="startButton" class="action-button">Start Gry</button>
+            <button id="resetButton" class="action-button" style="display:none;">Resetuj Grę</button>
+        </div>
+    </div>
+
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="messageBoxClose">OK</button>
+    </div>
+
+    <div id="checkoutScreen" class="checkout-screen">
+        <h2 class="text-2xl font-bold text-blue-800">Kasa IKEA</h2>
+        <p>Wybrane produkty:</p>
+        <ul id="collectedItemsList" class="text-left w-full px-4"></ul>
+        <p class="font-bold">Wartość podstawowa: <span id="baseOrderValueDisplay">0 zł</span></p>
+
+        <div class="checkout-options">
+            <p class="font-bold mb-2">Wybierz kanał płatności:</p>
+            <label>
+                <input type="radio" name="paymentChannel" value="inStore" checked> W sklepie
+            </label>
+            <label>
+                <input type="radio" name="paymentChannel" value="online"> Online (internet)
+            </label>
+        </div>
+
+        <div class="checkout-options">
+            <label>
+                <input type="checkbox" id="employeeDiscountCheckbox"> Zniżka pracownicza (-15%)
+            </label>
+        </div>
+
+        <button id="calculateTotalButton" class="action-button">Oblicz i Podsumuj</button>
+    </div>
+
+    <div id="summaryScreen" class="summary-screen">
+        <h2 class="text-2xl font-bold text-blue-800">Podsumowanie Zakupów</h2>
+        <div class="summary-details">
+            <p>Ilość artykułów: <span id="summaryArticles">0</span></p>
+            <p>Wynik HCS: <span id="summaryHCS">0</span></p>
+            <p>Wartość podstawowa zamówienia: <span id="summaryBaseValue">0 zł</span></p>
+            <p>Wartość udzielonych rabatów: <span id="summaryDiscounts">0 zł</span></p>
+            <p class="text-xl font-bold mt-4">Wartość końcowa: <span id="summaryFinalValue">0 zł</span></p>
+        </div>
+        <button id="bossButton" class="action-button">BOSS</button>
+        <button id="summaryCloseButton" class="action-button">Zakończenie Gry</button>
+    </div>
+
+    <div id="bossFightScreen" class="boss-fight-screen">
+        <h2 class="text-2xl font-bold text-blue-800">Walka z Choinką!</h2>
+        <p class="text-center text-gray-700">Klikaj w choinkę, aby ją pokonać!</p>
+        <div class="boss-stats">
+            <span>Zdrowie: <span id="bossHealth">200</span></span>
+            <span>Czas: <span id="bossTime">10</span>s</span>
+        </div>
+        <div id="bossImage" class="boss-image">🎄</div>
+        <p id="bossFightMessage" class="text-center text-lg font-bold mt-4"></p>
+        <button id="bossFightRestartButton" class="action-button" style="display:none;">Zagraj ponownie</button>
+        <button id="bossFightReturnButton" class="action-button" style="display:none;">Powrót do podsumowania</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const promotionsLeftDisplay = document.getElementById('promotions-left');
+        const hcsScoreDisplay = document.getElementById('hcs-score');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        const gameContainer = document.getElementById('gameContainer');
+
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const messageBoxClose = document.getElementById('messageBoxClose');
+
+        const checkoutScreen = document.getElementById('checkoutScreen');
+        const collectedItemsList = document.getElementById('collectedItemsList');
+        const baseOrderValueDisplay = document.getElementById('baseOrderValueDisplay');
+        const paymentChannelRadios = document.querySelectorAll('input[name="paymentChannel"]');
+        const employeeDiscountCheckbox = document.getElementById('employeeDiscountCheckbox');
+        const calculateTotalButton = document.getElementById('calculateTotalButton');
+
+        const summaryScreen = document.getElementById('summaryScreen');
+        const summaryArticles = document.getElementById('summaryArticles');
+        const summaryHCS = document.getElementById('summaryHCS');
+        const summaryBaseValue = document.getElementById('summaryBaseValue');
+        const summaryDiscounts = document.getElementById('summaryDiscounts');
+        const summaryFinalValue = document.getElementById('summaryFinalValue');
+        const bossButton = document.getElementById('bossButton');
+        const summaryCloseButton = document.getElementById('summaryCloseButton');
+
+        const bossFightScreen = document.getElementById('bossFightScreen');
+        const bossHealthDisplay = document.getElementById('bossHealth');
+        const bossTimeDisplay = document.getElementById('bossTime');
+        const bossImage = document.getElementById('bossImage');
+        const bossFightMessage = document.getElementById('bossFightMessage');
+        const bossFightRestartButton = document.getElementById('bossFightRestartButton');
+        const bossFightReturnButton = document.getElementById('bossFightReturnButton');
+
+
+        const TILE_SIZE = 40; // Size of each cell in the maze
+        let maze = [];
+        let player = { x: 0, y: 0 };
+        let score = 0;
+        let hcsScore = 0;
+        let promotions = []; // For the old "promotions" (yellow circles) - now bonus points
+        let collectedProducts = []; // Stores collected product objects
+        let gameStarted = false;
+        let gameWon = false;
+        let employeeInterval; // To store the interval for employee movement
+
+        // Boss fight variables
+        let bossHealth = 200;
+        let bossTimeLeft = 10;
+        let bossTimer;
+        let bossFightActive = false;
+
+        // Maze structure: 0 = path, 1 = wall, 2 = bonus promotion (old yellow circle), 3 = product, 4 = checkout
+        // Adjusted maze to be slightly larger and include a checkout point
+        const initialMaze = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 4, 1], /* 4 is checkout */
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+
+        // Product definitions with their fixed locations
+        const productsData = [
+            { id: 'nammaro', name: 'Krzesło Ogrodowe Nammaro', price: 299.00, x: 1, y: 3, collected: false, type: 'furniture' },
+            { id: 'pax', name: 'Szafa Pax', price: 1199.00, x: 10, y: 1, collected: false, type: 'furniture' },
+            { id: 'koncis', name: 'Wyciskacz Koncis', price: 14.99, x: 8, y: 8, collected: false, type: 'accessory' },
+            { id: 'bastis', name: 'Rolka do Ubrań Bastis', price: 3.00, x: 3, y: 10, collected: false, type: 'accessory' },
+            { id: 'fiskbo', name: 'Ramka do zdjęć Fiskbo', price: 9.99, x: 14, y: 3, collected: false, type: 'accessory' }
+        ];
+
+        // Employee objects
+        let employees = [
+            { x: 5, y: 1, dx: 1, dy: 0 },
+            { x: 7, y: 5, dx: 0, dy: 1 },
+            { x: 1, y: 8, dx: 1, dy: 0 }
+        ];
+
+        // Function to show a custom message box
+        function showMessageBox(message) {
+            messageText.textContent = message;
+            messageBox.style.display = 'flex';
+        }
+
+        // Function to hide the custom message box
+        function hideMessageBox() {
+            messageBox.style.display = 'none';
+        }
+
+        // Event listener for message box close button
+        messageBoxClose.addEventListener('click', hideMessageBox);
+
+        function initializeGame() {
+            // Deep copy the initial maze to reset promotions and products
+            maze = initialMaze.map(row => [...row]);
+            player = { x: 1, y: 1 }; // Starting position
+            score = 0;
+            hcsScore = 0;
+            promotions = []; // Reset bonus promotions
+            collectedProducts = []; // Reset collected products
+            gameWon = false;
+            bossFightActive = false;
+
+            // Place bonus promotions (yellow circles) randomly in valid path cells
+            const bonusPromotionCount = 3; // Fewer bonus promotions
+            let currentBonusPromotions = 0;
+            while (currentBonusPromotions < bonusPromotionCount) {
+                const randY = Math.floor(Math.random() * maze.length);
+                const randX = Math.floor(Math.random() * maze[0].length);
+                if (maze[randY][randX] === 0 && (randX !== player.x || randY !== player.y)) {
+                    maze[randY][randX] = 2; // Mark as bonus promotion
+                    promotions.push({ x: randX, y: randY });
+                    currentBonusPromotions++;
+                }
+            }
+
+            // Place products in the maze at their fixed locations
+            productsData.forEach(product => {
+                maze[product.y][product.x] = 3; // Mark as product
+                product.collected = false; // Reset collected status
+            });
+
+            // Reset employee positions and movement
+            employees = [
+                { x: 5, y: 1, dx: 1, dy: 0 },
+                { x: 7, y: 5, dx: 0, dy: 1 },
+                { x: 1, y: 8, dx: 1, dy: 0 }
+            ];
+            clearInterval(employeeInterval); // Clear any existing interval
+            employeeInterval = setInterval(moveEmployees, 500); // Move employees every 500ms
+
+            updateDisplays();
+            drawMaze();
+
+            // Hide all other screens
+            hideMessageBox();
+            checkoutScreen.style.display = 'none';
+            summaryScreen.style.display = 'none';
+            bossFightScreen.style.display = 'none';
+            gameContainer.style.display = 'flex'; // Ensure game container is visible
+        }
+
+        function updateDisplays() {
+            scoreDisplay.textContent = score;
+            promotionsLeftDisplay.textContent = promotions.length;
+            hcsScoreDisplay.textContent = hcsScore;
+        }
+
+        function drawMaze() {
+            canvas.width = maze[0].length * TILE_SIZE;
+            canvas.height = maze.length * TILE_SIZE;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let y = 0; y < maze.length; y++) {
+                for (let x = 0; x < maze[y].length; x++) {
+                    const tileType = maze[y][x];
+                    ctx.beginPath();
+                    ctx.rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+                    if (tileType === 1) { // Wall
+                        ctx.fillStyle = '#0058ab'; // IKEA Blue
+                    } else if (tileType === 0) { // Path
+                        ctx.fillStyle = '#fcfcfc'; // Light background
+                    } else if (tileType === 2) { // Bonus Promotion
+                        ctx.fillStyle = '#fcfcfc'; // Path background
+                    } else if (tileType === 3) { // Product
+                        ctx.fillStyle = '#fcfcfc'; // Path background
+                    } else if (tileType === 4) { // Checkout
+                        ctx.fillStyle = '#cc0000'; // Red for checkout area
+                    }
+                    ctx.fill();
+                    ctx.closePath();
+
+                    if (tileType === 2) { // Draw bonus promotion icon (yellow circle)
+                        ctx.beginPath();
+                        ctx.arc(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE / 3, 0, Math.PI * 2);
+                        ctx.fillStyle = '#ffda1a'; // IKEA Yellow
+                        ctx.fill();
+                        ctx.closePath();
+                    } else if (tileType === 3) { // Draw product icon (green square)
+                        ctx.beginPath();
+                        ctx.rect(x * TILE_SIZE + TILE_SIZE / 4, y * TILE_SIZE + TILE_SIZE / 4, TILE_SIZE / 2, TILE_SIZE / 2);
+                        ctx.fillStyle = '#4CAF50'; // Green
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+
+            // Draw employees
+            employees.forEach(emp => {
+                ctx.beginPath();
+                ctx.rect(emp.x * TILE_SIZE + TILE_SIZE / 4, emp.y * TILE_SIZE + TILE_SIZE / 4, TILE_SIZE / 2, TILE_SIZE / 2);
+                ctx.fillStyle = '#ffda1a'; // Yellow shirt
+                ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.rect(emp.x * TILE_SIZE + TILE_SIZE / 4, emp.y * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 4);
+                ctx.fillStyle = '#0058ab'; // Blue pants
+                ctx.fill();
+                ctx.closePath();
+            });
+
+            // Draw player (red shirt)
+            ctx.beginPath();
+            ctx.arc(player.x * TILE_SIZE + TILE_SIZE / 2, player.y * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE / 3, 0, Math.PI * 2);
+            ctx.fillStyle = '#cc0000'; // Red for player
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function moveEmployees() {
+            if (!gameStarted || gameWon) return;
+
+            employees.forEach(emp => {
+                const possibleMoves = [];
+                // Check all 4 directions
+                if (emp.y > 0 && maze[emp.y - 1][emp.x] !== 1) possibleMoves.push({ dx: 0, dy: -1 });
+                if (emp.y < maze.length - 1 && maze[emp.y + 1][emp.x] !== 1) possibleMoves.push({ dx: 0, dy: 1 });
+                if (emp.x > 0 && maze[emp.y][emp.x - 1] !== 1) possibleMoves.push({ dx: -1, dy: 0 });
+                if (emp.x < maze[0].length - 1 && maze[emp.y][emp.x + 1] !== 1) possibleMoves.push({ dx: 1, dy: 0 });
+
+                if (possibleMoves.length > 0) {
+                    const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                    emp.x += randomMove.dx;
+                    emp.y += randomMove.dy;
+                }
+
+                // Check for collision with player after employee moves
+                if (player.x === emp.x && player.y === emp.y) {
+                    hcsScore += 5;
+                    updateDisplays();
+                    showMessageBox('Spotkałeś pracownika IKEA! Twój HCS wzrósł o 5 punktów.');
+                }
+            });
+            drawMaze();
+        }
+
+
+        function movePlayer(dx, dy) {
+            if (!gameStarted || gameWon) return;
+
+            const newX = player.x + dx;
+            const newY = player.y + dy;
+
+            // Check boundaries and walls
+            if (newX >= 0 && newX < maze[0].length &&
+                newY >= 0 && newY < maze.length &&
+                maze[newY][newX] !== 1) { // Not a wall
+                player.x = newX;
+                player.y = newY;
+
+                const tileType = maze[newY][newX];
+
+                if (tileType === 2) { // Bonus Promotion
+                    score += 10; // Points for bonus promotion
+                    maze[newY][newX] = 0; // Remove promotion
+                    promotions = promotions.filter(p => p.x !== newX || p.y !== newY); // Update promotions array
+                    updateDisplays();
+                } else if (tileType === 3) { // Product
+                    const collectedProduct = productsData.find(p => p.x === newX && p.y === newY && !p.collected);
+                    if (collectedProduct) {
+                        collectedProduct.collected = true;
+                        collectedProducts.push(collectedProduct);
+                        maze[newY][newX] = 0; // Remove product from maze
+                        showMessageBox('Zebrałeś: ' + collectedProduct.name + '!');
+                    }
+                } else if (tileType === 4) { // Checkout
+                    if (collectedProducts.length > 0) {
+                        gameWon = true; // Player reached checkout
+                        gameStarted = false;
+                        clearInterval(employeeInterval); // Stop employees
+                        showCheckoutScreen();
+                    } else {
+                        showMessageBox('Musisz zebrać przynajmniej jeden produkt, aby przejść do kasy!');
+                    }
+                }
+                drawMaze();
+            }
+        }
+
+        function showCheckoutScreen() {
+            gameContainer.style.display = 'none';
+            checkoutScreen.style.display = 'flex';
+
+            collectedItemsList.innerHTML = '';
+            let currentBaseValue = 0;
+            collectedProducts.forEach(product => {
+                const li = document.createElement('li');
+                li.textContent = `${product.name} - ${product.price.toFixed(2)} zł`;
+                collectedItemsList.appendChild(li);
+                currentBaseValue += product.price;
+            });
+            baseOrderValueDisplay.textContent = currentBaseValue.toFixed(2) + ' zł';
+
+            // Reset payment options and discount
+            paymentChannelRadios[0].checked = true;
+            employeeDiscountCheckbox.checked = false;
+        }
+
+        calculateTotalButton.addEventListener('click', () => {
+            const paymentChannel = document.querySelector('input[name="paymentChannel"]:checked').value;
+            const hasEmployeeDiscount = employeeDiscountCheckbox.checked;
+
+            let baseValue = 0;
+            collectedProducts.forEach(p => baseValue += p.price);
+
+            let totalDiscounts = 0;
+            let finalValue = baseValue;
+
+            // Apply product-specific promotions
+            collectedProducts.forEach(product => {
+                let discountAmount = 0;
+                if (product.id === 'pax' && paymentChannel === 'online') {
+                    discountAmount = product.price * 0.15; // -15% on Szafa PAX
+                } else if (product.id === 'nammaro' && paymentChannel === 'online') {
+                    discountAmount = product.price * 0.30; // -30% on Krzesło Ogrodowe
+                } else if (product.type === 'accessory') {
+                    discountAmount = product.price * 0.15; // -15% on accessories
+                }
+                totalDiscounts += discountAmount;
+            });
+
+            // Apply employee discount
+            if (hasEmployeeDiscount) {
+                totalDiscounts += baseValue * 0.15; // -15% employee discount on base value
+            }
+
+            finalValue = Math.max(0, baseValue - totalDiscounts); // Ensure final value is not negative
+
+            showSummaryScreen(collectedProducts.length, hcsScore, baseValue, totalDiscounts, finalValue);
+        });
+
+        function showSummaryScreen(articles, hcs, baseVal, discounts, finalVal) {
+            checkoutScreen.style.display = 'none';
+            summaryScreen.style.display = 'flex';
+
+            summaryArticles.textContent = articles;
+            summaryHCS.textContent = hcs;
+            summaryBaseValue.textContent = baseVal.toFixed(2) + ' zł';
+            summaryDiscounts.textContent = discounts.toFixed(2) + ' zł';
+            summaryFinalValue.textContent = finalVal.toFixed(2) + ' zł';
+        }
+
+        summaryCloseButton.addEventListener('click', () => {
+            summaryScreen.style.display = 'none';
+            startButton.style.display = 'block';
+            resetButton.style.display = 'none';
+            gameStarted = false; // Game ends
+            initializeGame(); // Reset for next play
+        });
+
+        bossButton.addEventListener('click', () => {
+            summaryScreen.style.display = 'none';
+            showBossFightScreen();
+        });
+
+        function showBossFightScreen() {
+            bossFightScreen.style.display = 'flex';
+            bossHealth = 200;
+            bossTimeLeft = 10;
+            bossHealthDisplay.textContent = bossHealth;
+            bossTimeDisplay.textContent = bossTimeLeft;
+            bossFightMessage.textContent = '';
+            bossFightRestartButton.style.display = 'none';
+            bossFightReturnButton.style.display = 'none';
+            bossFightActive = true;
+
+            bossTimer = setInterval(() => {
+                bossTimeLeft--;
+                bossTimeDisplay.textContent = bossTimeLeft;
+                if (bossTimeLeft <= 0) {
+                    clearInterval(bossTimer);
+                    bossFightActive = false;
+                    if (bossHealth > 0) {
+                        bossFightMessage.textContent = 'Czas minął! Choinka nie została pokonana.';
+                    }
+                    bossFightRestartButton.style.display = 'block';
+                    bossFightReturnButton.style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        bossImage.addEventListener('click', () => {
+            if (bossFightActive && bossHealth > 0) {
+                bossHealth -= 10;
+                bossHealthDisplay.textContent = bossHealth;
+                if (bossHealth <= 0) {
+                    bossHealth = 0; // Ensure it doesn't go negative
+                    bossHealthDisplay.textContent = bossHealth;
+                    clearInterval(bossTimer);
+                    bossFightActive = false;
+                    bossFightMessage.textContent = 'Gratulacje! Pokonałeś choinkę!';
+                    bossFightRestartButton.style.display = 'block';
+                    bossFightReturnButton.style.display = 'block';
+                }
+            }
+        });
+
+        bossFightRestartButton.addEventListener('click', () => {
+            showBossFightScreen(); // Restart boss fight
+        });
+
+        bossFightReturnButton.addEventListener('click', () => {
+            bossFightScreen.style.display = 'none';
+            summaryScreen.style.display = 'flex'; // Return to summary
+        });
+
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (!gameStarted || gameWon) return; // Only allow movement if game is active
+            switch (e.key) {
+                case 'ArrowUp':
+                    movePlayer(0, -1);
+                    break;
+                case 'ArrowDown':
+                    movePlayer(0, 1);
+                    break;
+                case 'ArrowLeft':
+                    movePlayer(-1, 0);
+                    break;
+                case 'ArrowRight':
+                    movePlayer(1, 0);
+                    break;
+            }
+        });
+
+        // Mobile controls
+        document.getElementById('up').addEventListener('click', () => movePlayer(0, -1));
+        document.getElementById('down').addEventListener('click', () => movePlayer(0, 1));
+        document.getElementById('left').addEventListener('click', () => movePlayer(-1, 0));
+        document.getElementById('right').addEventListener('click', () => movePlayer(1, 0));
+
+        startButton.addEventListener('click', () => {
+            gameStarted = true;
+            initializeGame();
+            startButton.style.display = 'none';
+            resetButton.style.display = 'block';
+        });
+
+        resetButton.addEventListener('click', () => {
+            gameStarted = true; // Still playing after reset
+            initializeGame();
+        });
+
+        // Initial setup on window load
+        window.onload = function() {
+            initializeGame(); // Draw initial maze with promotions
+            drawMaze(); // Ensure canvas size is set and drawn
+            gameStarted = false; // Game is not started until the user clicks the start button
+            startButton.style.display = 'block';
+            resetButton.style.display = 'none';
+        };
+
+        // Handle canvas resizing to keep it responsive
+        window.addEventListener('resize', () => {
+            drawMaze(); // Redraw maze when window is resized
+        });
+
+    </script>
+</body>
+</html>

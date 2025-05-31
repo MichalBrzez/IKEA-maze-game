@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Labirynt IKEA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
@@ -64,7 +63,7 @@
             -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
         }
         .control-button:hover {
-            background-color: #e6c500; /* Ciemniejszy żółty */
+            background-color: #e6c500; /* Ciemniejszy ĹźĂłĹty */
         }
         .control-button:active {
             transform: scale(0.98);
@@ -199,7 +198,7 @@
     <div class="game-container" id="gameContainer">
         <h1 class="text-3xl font-bold text-center text-blue-800 mb-4">Labirynt IKEA</h1>
         <p class="text-center text-gray-700 mb-4">
-            Poruszaj sie po labiryncie, znajdz produkty i dotrzyj do kasy!
+            Poruszaj siÄ po labiryncie, znajdĹş produkty i dotrzyj do kasy!
         </p>
 
         <div class="game-info">
@@ -211,15 +210,15 @@
         <canvas id="gameCanvas"></canvas>
 
         <div class="controls">
-            <button id="up" class="control-button">▲</button>
-            <button id="left" class="control-button">◀</button>
-            <button id="right" class="control-button">▶</button>
-            <button id="down" class="control-button">▼</button>
+            <button id="up" class="control-button">â˛</button>
+            <button id="left" class="control-button">â</button>
+            <button id="right" class="control-button">âś</button>
+            <button id="down" class="control-button">âź</button>
         </div>
 
         <div class="action-buttons">
             <button id="startButton" class="action-button">Start Gry</button>
-            <button id="resetButton" class="action-button" style="display:none;">Resetuj Gre</button>
+            <button id="resetButton" class="action-button" style="display:none;">Resetuj GrÄ</button>
         </div>
     </div>
 
@@ -232,10 +231,10 @@
         <h2 class="text-2xl font-bold text-blue-800">Kasa IKEA</h2>
         <p>Wybrane produkty:</p>
         <ul id="collectedItemsList" class="text-left w-full px-4"></ul>
-        <p class="font-bold">Wartosc podstawowa: <span id="baseOrderValueDisplay">0 zl</span></p>
+        <p class="font-bold">WartoĹÄ podstawowa: <span id="baseOrderValueDisplay">0 zĹ</span></p>
 
         <div class="checkout-options">
-            <p class="font-bold mb-2">Wybierz kanal platnosci:</p>
+            <p class="font-bold mb-2">Wybierz kanaĹ pĹatnoĹci:</p>
             <label>
                 <input type="radio" name="paymentChannel" value="inStore" checked> W sklepie
             </label>
@@ -246,7 +245,7 @@
 
         <div class="checkout-options">
             <label>
-                <input type="checkbox" id="employeeDiscountCheckbox"> Znizka pracownicza (-15%)
+                <input type="checkbox" id="employeeDiscountCheckbox"> ZniĹźka pracownicza (-15%)
             </label>
         </div>
 
@@ -254,29 +253,29 @@
     </div>
 
     <div id="summaryScreen" class="summary-screen">
-        <h2 class="text-2xl font-bold text-blue-800">Podsumowanie Zakupow</h2>
+        <h2 class="text-2xl font-bold text-blue-800">Podsumowanie ZakupĂłw</h2>
         <div class="summary-details">
-            <p>Ilosc artykulow: <span id="summaryArticles">0</span></p>
+            <p>IloĹÄ artykuĹĂłw: <span id="summaryArticles">0</span></p>
             <p>Wynik HCS: <span id="summaryHCS">0</span></p>
-            <p>Wartosc podstawowa zamowienia: <span id="summaryBaseValue">0 zl</span></p>
-            <p>Wartosc udzielonych rabatow: <span id="summaryDiscounts">0 zl</span></p>
-            <p class="text-xl font-bold mt-4">Wartosc koncowa: <span id="summaryFinalValue">0 zl</span></p>
+            <p>WartoĹÄ podstawowa zamĂłwienia: <span id="summaryBaseValue">0 zĹ</span></p>
+            <p>WartoĹÄ udzielonych rabatĂłw: <span id="summaryDiscounts">0 zĹ</span></p>
+            <p class="text-xl font-bold mt-4">WartoĹÄ koĹcowa: <span id="summaryFinalValue">0 zĹ</span></p>
         </div>
         <button id="bossButton" class="action-button">BOSS</button>
-        <button id="summaryCloseButton" class="action-button">Zakonczenie Gry</button>
+        <button id="summaryCloseButton" class="action-button">ZakoĹczenie Gry</button>
     </div>
 
     <div id="bossFightScreen" class="boss-fight-screen">
-        <h2 class="text-2xl font-bold text-blue-800">Walka z Choinka!</h2>
-        <p class="text-center text-gray-700">Klikaj w choinke, aby ja pokonac!</p>
+        <h2 class="text-2xl font-bold text-blue-800">Walka z ChoinkÄ!</h2>
+        <p class="text-center text-gray-700">Klikaj w choinkÄ, aby jÄ pokonaÄ!</p>
         <div class="boss-stats">
             <span>Zdrowie: <span id="bossHealth">200</span></span>
             <span>Czas: <span id="bossTime">10</span>s</span>
         </div>
-        <div id="bossImage" class="boss-image">🎄</div>
+        <div id="bossImage" class="boss-image">đ</div>
         <p id="bossFightMessage" class="text-center text-lg font-bold mt-4"></p>
         <button id="bossFightRestartButton" class="action-button" style="display:none;">Zagraj ponownie</button>
-        <button id="bossFightReturnButton" class="action-button" style="display:none;">Powrot do podsumowania</button>
+        <button id="bossFightReturnButton" class="action-button" style="display:none;">PowrĂłt do podsumowania</button>
     </div>
 
     <script>
@@ -355,11 +354,11 @@
 
         // Product definitions with their fixed locations
         const productsData = [
-            { id: 'nammaro', name: 'Krzeslo Ogrodowe Nammaro', price: 299.00, x: 1, y: 3, collected: false, type: 'furniture' },
+            { id: 'nammaro', name: 'KrzesĹo Ogrodowe Nammaro', price: 299.00, x: 1, y: 3, collected: false, type: 'furniture' },
             { id: 'pax', name: 'Szafa Pax', price: 1199.00, x: 10, y: 1, collected: false, type: 'furniture' },
             { id: 'koncis', name: 'Wyciskacz Koncis', price: 14.99, x: 8, y: 8, collected: false, type: 'accessory' },
-            { id: 'bastis', name: 'Rolka do Ubran Bastis', price: 3.00, x: 3, y: 10, collected: false, type: 'accessory' },
-            { id: 'fiskbo', name: 'Ramka do zdjec Fiskbo', price: 9.99, x: 14, y: 3, collected: false, type: 'accessory' }
+            { id: 'bastis', name: 'Rolka do UbraĹ Bastis', price: 3.00, x: 3, y: 10, collected: false, type: 'accessory' },
+            { id: 'fiskbo', name: 'Ramka do zdjÄÄ Fiskbo', price: 9.99, x: 14, y: 3, collected: false, type: 'accessory' }
         ];
 
         // Employee objects
@@ -525,7 +524,7 @@
                 if (player.x === emp.x && player.y === emp.y) {
                     hcsScore += 5;
                     updateDisplays();
-                    showMessageBox('Spotkales pracownika IKEA! Twoj HCS wzrosl o 5 punktow.');
+                    showMessageBox('SpotkaĹeĹ pracownika IKEA! TwĂłj HCS wzrĂłsĹ o 5 punktĂłw.');
                 }
             });
             drawMaze();
@@ -558,7 +557,7 @@
                         collectedProduct.collected = true;
                         collectedProducts.push(collectedProduct);
                         maze[newY][newX] = 0; // Remove product from maze
-                        showMessageBox('Zebrales: ' + collectedProduct.name + '!');
+                        showMessageBox('ZebraĹeĹ: ' + collectedProduct.name + '!');
                     }
                 } else if (tileType === 4) { // Checkout
                     if (collectedProducts.length > 0) {
@@ -567,7 +566,7 @@
                         clearInterval(employeeInterval); // Stop employees
                         showCheckoutScreen();
                     } else {
-                        showMessageBox('Musisz zebrac przynajmniej jeden produkt, aby przejsc do kasy!');
+                        showMessageBox('Musisz zebraÄ przynajmniej jeden produkt, aby przejĹÄ do kasy!');
                     }
                 }
                 drawMaze();
@@ -582,11 +581,11 @@
             let currentBaseValue = 0;
             collectedProducts.forEach(product => {
                 const li = document.createElement('li');
-                li.textContent = `${product.name} - ${product.price.toFixed(2)} zl`;
+                li.textContent = `${product.name} - ${product.price.toFixed(2)} zĹ`;
                 collectedItemsList.appendChild(li);
                 currentBaseValue += product.price;
             });
-            baseOrderValueDisplay.textContent = currentBaseValue.toFixed(2) + ' zl';
+            baseOrderValueDisplay.textContent = currentBaseValue.toFixed(2) + ' zĹ';
 
             // Reset payment options and discount
             paymentChannelRadios[0].checked = true;
@@ -609,7 +608,7 @@
                 if (product.id === 'pax' && paymentChannel === 'online') {
                     discountAmount = product.price * 0.15; // -15% on Szafa PAX
                 } else if (product.id === 'nammaro' && paymentChannel === 'online') {
-                    discountAmount = product.price * 0.30; // -30% on Krzeslo Ogrodowe
+                    discountAmount = product.price * 0.30; // -30% on KrzesĹo Ogrodowe
                 } else if (product.type === 'accessory') {
                     discountAmount = product.price * 0.15; // -15% on accessories
                 }
@@ -632,9 +631,9 @@
 
             summaryArticles.textContent = articles;
             summaryHCS.textContent = hcs;
-            summaryBaseValue.textContent = baseVal.toFixed(2) + ' zl';
-            summaryDiscounts.textContent = discounts.toFixed(2) + ' zl';
-            summaryFinalValue.textContent = finalVal.toFixed(2) + ' zl';
+            summaryBaseValue.textContent = baseVal.toFixed(2) + ' zĹ';
+            summaryDiscounts.textContent = discounts.toFixed(2) + ' zĹ';
+            summaryFinalValue.textContent = finalVal.toFixed(2) + ' zĹ';
         }
 
         summaryCloseButton.addEventListener('click', () => {
@@ -668,7 +667,7 @@
                     clearInterval(bossTimer);
                     bossFightActive = false;
                     if (bossHealth > 0) {
-                        bossFightMessage.textContent = 'Czas minal! Choinka nie zostala pokonana.';
+                        bossFightMessage.textContent = 'Czas minÄĹ! Choinka nie zostaĹa pokonana.';
                     }
                     bossFightRestartButton.style.display = 'block';
                     bossFightReturnButton.style.display = 'block';
@@ -685,7 +684,7 @@
                     bossHealthDisplay.textContent = bossHealth;
                     clearInterval(bossTimer);
                     bossFightActive = false;
-                    bossFightMessage.textContent = 'Gratulacje! Pokonales choinke!';
+                    bossFightMessage.textContent = 'Gratulacje! PokonaĹeĹ choinkÄ!';
                     bossFightRestartButton.style.display = 'block';
                     bossFightReturnButton.style.display = 'block';
                 }

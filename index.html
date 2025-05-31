@@ -206,7 +206,123 @@
             <span>Promocje: <span id="promotions-left">0</span></span>
             <span>HCS: <span id="hcs-score">0</span></span>
         </div>
+<div class="legend-container">
+    <h3 class="text-xl font-bold text-blue-800 mb-2">Legenda Mapy</h3>
+    <div class="legend-items">
+        <div class="legend-item">
+            <div class="legend-icon player-icon"></div>
+            <span>Gracz (Ty)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon employee-icon">
+                <div class="employee-shirt"></div>
+                <div class="employee-pants"></div>
+            </div>
+            <span>Pracownik IKEA</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon product-icon"></div>
+            <span>Produkt do zebrania</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon promotion-icon"></div>
+            <span>Promocja (bonus)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon wall-icon"></div>
+            <span>Sciana</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon checkout-icon"></div>
+            <span>Kasa (koniec gry)</span>
+        </div>
+    </div>
+</div>
 
+<style>
+    .legend-container {
+        background-color: #fcfcfc;
+        border: 1px solid #e0e0e0;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-top: 1.5rem;
+        width: 100%;
+        max-width: 400px; /* Limit width of legend */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+    .legend-items {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two columns for items */
+        gap: 0.75rem;
+        justify-items: start; /* Align items to the start of their grid cell */
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        color: #555;
+    }
+    .legend-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 0.25rem; /* Rounded corners for icons */
+        flex-shrink: 0; /* Prevent icon from shrinking */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Icon styles */
+    .player-icon {
+        background-color: #cc0000; /* Red */
+        border-radius: 50%; /* Circle */
+    }
+    .employee-icon {
+        background-color: transparent;
+        position: relative;
+    }
+    .employee-shirt {
+        width: 100%;
+        height: 60%;
+        background-color: #ffda1a; /* Yellow shirt */
+        border-radius: 0.25rem 0.25rem 0 0;
+        position: absolute;
+        top: 0;
+    }
+    .employee-pants {
+        width: 100%;
+        height: 40%;
+        background-color: #0058ab; /* Blue pants */
+        border-radius: 0 0 0.25rem 0.25rem;
+        position: absolute;
+        bottom: 0;
+    }
+    .product-icon {
+        background-color: #4CAF50; /* Green */
+    }
+    .promotion-icon {
+        background-color: #ffda1a; /* IKEA Yellow */
+        border-radius: 50%; /* Circle */
+    }
+    .wall-icon {
+        background-color: #0058ab; /* IKEA Blue */
+    }
+    .checkout-icon {
+        background-color: #cc0000; /* Red */
+    }
+
+    /* Responsive adjustments for legend */
+    @media (max-width: 480px) {
+        .legend-items {
+            grid-template-columns: 1fr; /* Single column on small screens */
+        }
+        .legend-container {
+            padding: 0.75rem;
+        }
+    }
+</style>
         <canvas id="gameCanvas"></canvas>
 
         <div class="controls">

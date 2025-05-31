@@ -210,10 +210,10 @@
         <canvas id="gameCanvas"></canvas>
 
         <div class="controls">
-            <button id="up" class="control-button">â˛</button>
-            <button id="left" class="control-button">â</button>
-            <button id="right" class="control-button">âs</button>
-            <button id="down" class="control-button">âz</button>
+            <button id="up" class="control-button">▲</button>
+            <button id="left" class="control-button">◀</button>
+            <button id="right" class="control-button">▶</button>
+            <button id="down" class="control-button">▼</button>
         </div>
 
         <div class="action-buttons">
@@ -419,7 +419,7 @@
                 { x: 1, y: 8, dx: 1, dy: 0 }
             ];
             clearInterval(employeeInterval); // Clear any existing interval
-            employeeInterval = setInterval(moveEmployees, 500); // Move employees every 500ms
+            employeeInterval = setInterval(moveEmployees, 500); // Move employees every 600ms
 
             updateDisplays();
             drawMaze();
@@ -581,11 +581,11 @@
             let currentBaseValue = 0;
             collectedProducts.forEach(product => {
                 const li = document.createElement('li');
-                li.textContent = `${product.name} - ${product.price.toFixed(2)} zĹ`;
+                li.textContent = `${product.name} - ${product.price.toFixed(2)} zl`;
                 collectedItemsList.appendChild(li);
                 currentBaseValue += product.price;
             });
-            baseOrderValueDisplay.textContent = currentBaseValue.toFixed(2) + ' zĹ';
+            baseOrderValueDisplay.textContent = currentBaseValue.toFixed(2) + ' zl';
 
             // Reset payment options and discount
             paymentChannelRadios[0].checked = true;
@@ -631,9 +631,9 @@
 
             summaryArticles.textContent = articles;
             summaryHCS.textContent = hcs;
-            summaryBaseValue.textContent = baseVal.toFixed(2) + ' zĹ';
-            summaryDiscounts.textContent = discounts.toFixed(2) + ' zĹ';
-            summaryFinalValue.textContent = finalVal.toFixed(2) + ' zĹ';
+            summaryBaseValue.textContent = baseVal.toFixed(2) + ' zl';
+            summaryDiscounts.textContent = discounts.toFixed(2) + ' zl';
+            summaryFinalValue.textContent = finalVal.toFixed(2) + ' zl';
         }
 
         summaryCloseButton.addEventListener('click', () => {
